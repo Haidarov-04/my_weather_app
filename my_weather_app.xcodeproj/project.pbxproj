@@ -6,6 +6,24 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		045D10D52D1C715B00B4CA3A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 045D10D42D1C715B00B4CA3A /* Alamofire */; };
+		045D10D82D1D129800B4CA3A /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 045D10D72D1D129800B4CA3A /* SnapKit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		045D10DC2D1D13E300B4CA3A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0482957A2D1C63FF0070D218 /* my_weather_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = my_weather_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,16 +54,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				045D10D52D1C715B00B4CA3A /* Alamofire in Frameworks */,
+				045D10D82D1D129800B4CA3A /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		045D10D32D1C715B00B4CA3A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		048295712D1C63FF0070D218 = {
 			isa = PBXGroup;
 			children = (
 				0482957C2D1C63FF0070D218 /* my_weather_app */,
+				045D10D32D1C715B00B4CA3A /* Frameworks */,
 				0482957B2D1C63FF0070D218 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,6 +96,7 @@
 				048295762D1C63FF0070D218 /* Sources */,
 				048295772D1C63FF0070D218 /* Frameworks */,
 				048295782D1C63FF0070D218 /* Resources */,
+				045D10DC2D1D13E300B4CA3A /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -78,6 +107,8 @@
 			);
 			name = my_weather_app;
 			packageProductDependencies = (
+				045D10D42D1C715B00B4CA3A /* Alamofire */,
+				045D10D72D1D129800B4CA3A /* SnapKit */,
 			);
 			productName = my_weather_app;
 			productReference = 0482957A2D1C63FF0070D218 /* my_weather_app.app */;
@@ -107,6 +138,10 @@
 			);
 			mainGroup = 048295712D1C63FF0070D218;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				045D10D22D1C6F9A00B4CA3A /* XCRemoteSwiftPackageReference "Alamofire" */,
+				045D10D62D1D129800B4CA3A /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0482957B2D1C63FF0070D218 /* Products */;
 			projectDirPath = "";
@@ -150,7 +185,6 @@
 				INFOPLIST_FILE = my_weather_app/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -178,7 +212,6 @@
 				INFOPLIST_FILE = my_weather_app/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -335,6 +368,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		045D10D22D1C6F9A00B4CA3A /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+		045D10D62D1D129800B4CA3A /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		045D10D42D1C715B00B4CA3A /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 045D10D22D1C6F9A00B4CA3A /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		045D10D72D1D129800B4CA3A /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 045D10D62D1D129800B4CA3A /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 048295722D1C63FF0070D218 /* Project object */;
 }
