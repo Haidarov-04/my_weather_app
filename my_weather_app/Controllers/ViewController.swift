@@ -15,11 +15,14 @@ class ViewController: UIViewController {
     var weatherData: WeatherDatas!
     
     //MARK: -UI Elements
-    let scrollView: UIScrollView = {
+    let refreshControl = UIRefreshControl()
+    
+    lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .systemBlue.withAlphaComponent(0.5)
         scrollView.showsVerticalScrollIndicator = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.refreshControl = refreshControl
         return scrollView
     }()
     
@@ -30,7 +33,7 @@ class ViewController: UIViewController {
     }()
     
     lazy var header: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.textColor = .white
         label.font = UIFont(name: "Georgia", size: 20)
         label.textAlignment = .center
@@ -52,9 +55,9 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .white
-        label.font = UIFont(name: "TimesNewRomanPSMT", size: 100)
+        label.font = UIFont(name: "TimesNewRomanPSMT", size: 80)
         label.textAlignment = .center
-        label.text = "0°"
+        label.text = "--"
         return label
     }()
     
@@ -64,7 +67,7 @@ class ViewController: UIViewController {
         label.textColor = .white
         label.font = UIFont(name: "TimesNewRomanPSMT", size: 17)
         label.textAlignment = .center
-        label.text = "Feels like: 0°"
+        label.text = "Feels like: --"
         return label
     }()
     
@@ -72,6 +75,8 @@ class ViewController: UIViewController {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = .black.withAlphaComponent(0.3)
+        imageView.layer.cornerRadius = 45
         return imageView
     }()
     
@@ -81,11 +86,12 @@ class ViewController: UIViewController {
         label.textColor = .white
         label.font = UIFont(name: "HoeflerText-Regular", size: 20)
         label.textAlignment = .center
+        label.text = "-----"
         return label
     }()
     
     let hourlyView:UIView = {
-       let view = UIView()
+        let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 10
         view.backgroundColor = .black.withAlphaComponent(0.3)
@@ -105,7 +111,7 @@ class ViewController: UIViewController {
         label.textColor = .white
         label.font = UIFont(name: "HoeflerText-Regular", size: 18)
         label.textAlignment = .left
-        label.text = " "
+        label.text = "----------"
         return label
     }()
     
@@ -115,7 +121,7 @@ class ViewController: UIViewController {
         label.textColor = .white
         label.font = UIFont(name: "HoeflerText-Regular", size: 16)
         label.textAlignment = .left
-        label.text = " "
+        label.text = "Скорост ветра: --м/с"
         return label
     }()
     
@@ -128,12 +134,6 @@ class ViewController: UIViewController {
         return scrollView
     }()
     
-    let hourlyContentView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
     let hourlyStackView: UIStackView = {
         let view = UIStackView()
         view.axis = .horizontal
@@ -142,7 +142,39 @@ class ViewController: UIViewController {
         return view
     }()
     
+    let dailyView: UIView = {
+       let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .black.withAlphaComponent(0.3)
+        view.layer.cornerRadius = 10
+        return view
+    }()
+    
+    let dailyLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .white
+        label.font = UIFont(name: "HoeflerText-Regular", size: 16)
+        label.textAlignment = .left
+        label.text = "Дневной прогноз"
+        return label
+    }()
+    
+    let tableview: UITableView = {
+        let tableview = UITableView()
+        tableview.translatesAutoresizingMaskIntoConstraints = false
+        tableview.register(DaysCell.self, forCellReuseIdentifier: "cell")
+        tableview.backgroundColor = .clear
+        tableview.separatorColor = .gray.withAlphaComponent(0.5)
+        tableview.rowHeight = 50
+        tableview.isScrollEnabled = false
+        return tableview
+    }()
+    
+    
     lazy var hourlyDivider = divider()
+    lazy var dailyDivider = divider()
+    
     
     //MARK: -Life cycle
     override func viewDidLoad() {
@@ -150,11 +182,14 @@ class ViewController: UIViewController {
         setupMainView()
         setupUI()
         fetchData()
+        delegates()
+        targets()
     }
     
-    //MARK: -
+    //MARK: - Methods
     private func setupMainView() {
         navigationItem.titleView = header
+        
     }
     
     private func setupUI() {
@@ -179,24 +214,23 @@ class ViewController: UIViewController {
         contentView.addSubview(temperatureLabel)
         temperatureLabel.snp.makeConstraints { make in
             make.top.equalTo(adressLabel.snp.bottom).offset(10)
-            make.right.equalTo(view.snp.centerX).offset(-5)
+            make.centerX.equalToSuperview().multipliedBy(0.5)
         }
         contentView.addSubview(feelsLikeLabel)
         feelsLikeLabel.snp.makeConstraints { make in
-            make.top.equalTo(temperatureLabel.snp.bottom).offset(3)
-            make.left.equalTo(temperatureLabel.snp.left)
+            make.top.equalTo(temperatureLabel.snp.bottom).offset(5)
+            make.centerX.equalTo(temperatureLabel.snp.centerX)
         }
         contentView.addSubview(weatherImageView)
         weatherImageView.snp.makeConstraints { make in
             make.top.equalTo(adressLabel.snp.bottom).offset(10)
-
-            make.left.equalTo(view.snp.centerX).offset(35)
-            make.width.height.equalTo(100)
+            make.centerX.equalToSuperview().multipliedBy(1.5)
+            make.width.height.equalTo(90)
         }
         contentView.addSubview(conditonLabel)
         conditonLabel.snp.makeConstraints { make in
             make.centerY.equalTo(feelsLikeLabel.snp.centerY)
-            make.left.equalTo(view.snp.centerX).offset(5)
+            make.centerX.equalTo(weatherImageView.snp.centerX)
         }
         
         contentView.addSubview(hourlyView)
@@ -226,35 +260,53 @@ class ViewController: UIViewController {
             make.centerX.equalToSuperview()
             make.height.equalTo(1)
         }
-
+        
         view.addSubview(hourlyScrollView)
-            hourlyScrollView.snp.makeConstraints { make in
-                make.top.equalTo(hourlyDivider.snp.bottom).offset(10)
-                make.bottom.equalTo(hourlyView.snp.bottom)
-                make.right.equalTo(hourlyView)
-                make.left.equalTo(hourlyView.snp.left).offset(10)
-            }
-            
-            hourlyScrollView.addSubview(hourlyContentView)
-            hourlyContentView.snp.makeConstraints { make in
-                make.top.left.right.bottom.equalToSuperview()
-                make.height.equalToSuperview()
-            }
+        hourlyScrollView.snp.makeConstraints { make in
+            make.top.equalTo(hourlyDivider.snp.bottom).offset(10)
+            make.bottom.equalTo(hourlyView.snp.bottom)
+            make.right.equalTo(hourlyView).offset(-10)
+            make.left.equalTo(hourlyView.snp.left).offset(10)
+        }
         
-            hourlyContentView.addSubview(hourlyStackView)
-            hourlyStackView.snp.makeConstraints { make in
-                make.top.left.right.bottom.equalToSuperview()
-                make.left.equalToSuperview().offset(10)
-            }
+        hourlyScrollView.addSubview(hourlyStackView)
+        hourlyStackView.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalToSuperview()
+            make.left.equalToSuperview().offset(10)
+        }
         
-//        hourlyStackView.subviews.count
-
+        contentView.addSubview(dailyView)
+        dailyView.snp.makeConstraints { make in
+            make.top.equalTo(hourlyView.snp.bottom).offset(10)
+            make.width.equalToSuperview().multipliedBy(0.9)
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-10)
+        }
         
+        dailyView.addSubview(dailyLabel)
+        dailyLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.left.equalToSuperview().offset(10)
+        }
+        
+        dailyView.addSubview(dailyDivider)
+        dailyDivider.snp.makeConstraints { make in
+            make.top.equalTo(dailyLabel.snp.bottom).offset(5)
+            make.width.equalToSuperview().multipliedBy(0.95)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(1)
+        }
+        
+        dailyView.addSubview(tableview)
+        tableview.snp.makeConstraints { make in
+            make.top.equalTo(dailyDivider.snp.bottom).offset(5)
+            make.right.equalToSuperview().offset(-20)
+            make.left.bottom.equalToSuperview()
+            make.height.equalTo(750)
+        }
+    
     }
-    
-    
-    
-    
+
     private func fetchData() {
         let urlString = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/\(adress)?unitGroup=metric&include=days%2Chours%2Ccurrent&lang=ru&key=8UR5K2HXEMSRTAGZZLSETRAVQ&contentType=json"
         
@@ -271,24 +323,22 @@ class ViewController: UIViewController {
             
         }
         
-    
+        
     }
     
-    func updateUI(){
+    private func updateUI(){
         temperatureLabel.text = "\(weatherData?.currentConditions.temp ?? 0)°"
         feelsLikeLabel.text = "Feels like: \(weatherData?.currentConditions.feelslike ?? 0)°"
         conditonLabel.text = "\(weatherData?.currentConditions.conditions ?? "")"
         weatherImageView.image = UIImage(named: weatherData?.currentConditions.icon ?? "")
+        weatherImageView.backgroundColor = .none
         descriptionLabel.text = weatherData?.days[0].description
         windSpeedLabel.text = "Скорост ветра: \(weatherData?.currentConditions.windspeed ?? 0) м/с"
         addHourlyViews()
-        
-
-        
+        tableview.reloadData()
     }
     
-    
-    func addHourlyViews() {
+    private func addHourlyViews() {
         for (index, hour) in weatherData.days[0].hours.enumerated() {
             if Double(hour.datetime.prefix(2))! == Double(weatherData.currentConditions.datetime.prefix(2))! {
                 let hourly = HourlyWeatherView(hour: "Now", icon: hour.icon, temp: hour.temp)
@@ -305,7 +355,7 @@ class ViewController: UIViewController {
                 }
                 hourlyStackView.addArrangedSubview(hourly)
             }
-
+            
         }
         
         for (index, hour) in weatherData.days[1].hours.enumerated() {
@@ -318,7 +368,59 @@ class ViewController: UIViewController {
             }
         }
     }
-
-
+    
+    private func delegates() {
+        tableview.delegate = self
+        tableview.dataSource = self
+    }
+    
+    private func targets() {
+        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: .valueChanged)
+    }
+    
+    @objc
+    func refresh(_ sender: Any) {
+        fetchData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.scrollView.refreshControl?.endRefreshing()
+        }
+    }
+    
+    
 }
 
+
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let count = weatherData?.days.count{
+            return count
+        }
+        return 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)  as? DaysCell else { return UITableViewCell()}
+        if let day = weatherData?.days[indexPath.row]{
+            cell.dayLabel.text = "Today"
+            cell.dateLabel.text = day.datetime
+            cell.imgView.image = UIImage(named: day.icon)
+            cell.minTempLabel.text = "\(day.tempmin)°"
+            cell.desc.text = day.conditions
+            cell.maxTempLabel.text = "\(day.tempmax)°"
+            
+        }
+        cell.backgroundColor = .clear
+        cell.selectionStyle = .none
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = DailyVC()
+        vc.daily = weatherData?.days[indexPath.row]
+        vc.today = indexPath.row == 0
+        vc.currentTime = Double((weatherData?.currentConditions.datetime.prefix(2))!)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+}
