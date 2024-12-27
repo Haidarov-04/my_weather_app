@@ -19,6 +19,7 @@ struct Day: Codable {
     var tempmin: Double
     var temp: Double
     var feelslike: Double
+    var windspeed: Double
     var sunrise: String
     var sunset: String
     var conditions: String

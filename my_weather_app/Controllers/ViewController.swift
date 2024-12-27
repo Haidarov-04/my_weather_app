@@ -19,7 +19,7 @@ class ViewController: UIViewController {
     
     lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .systemBlue.withAlphaComponent(0.5)
+        scrollView.backgroundColor = UIColor(named: "customBlue")
         scrollView.showsVerticalScrollIndicator = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.refreshControl = refreshControl
@@ -189,6 +189,11 @@ class ViewController: UIViewController {
     //MARK: - Methods
     private func setupMainView() {
         navigationItem.titleView = header
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(named: "customBlue")
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
         
     }
     

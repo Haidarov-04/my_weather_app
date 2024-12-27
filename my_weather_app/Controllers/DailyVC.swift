@@ -89,6 +89,24 @@ class DailyVC: UIViewController {
         return view
     }
     
+    lazy var descLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .white
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.text = daily?.description ?? ""
+        return label
+    }()
+    
+    lazy var windSpeed: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = "Скорост ветра: \(daily?.windspeed ?? 0) м/с"
+        return label
+    }()
     
     lazy var layout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
@@ -102,25 +120,30 @@ class DailyVC: UIViewController {
     lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(DailyCell.self, forCellWithReuseIdentifier: "cell")
-        collectionView.backgroundColor = .systemBlue
+        collectionView.backgroundColor = UIColor(named: "customBlue")
+        collectionView.showsVerticalScrollIndicator = false
         return collectionView
     }()
     
     //MARK: -
-    
     lazy var sunrise = sun("sunrise", "\(daily?.sunrise ?? "")")
     lazy var sunset = sun("sunset", "\(daily?.sunset ?? "")")
 
     //MARK: -Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBlue
+        setupMainView()
         setupUI()
         delegates()
 
     }
     
     //MARK: - methods
+    
+    private func setupMainView() {
+        view.backgroundColor = UIColor(named: "customBlue")
+        navigationController?.navigationBar.tintColor = .white
+    }
     private func setupUI() {
         view.addSubview(dateLabel)
         dateLabel.snp.makeConstraints { make in
@@ -131,7 +154,6 @@ class DailyVC: UIViewController {
         view.addSubview(tempLabel)
         tempLabel.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(20)
-            make.width.height.equalTo(50)
             make.centerX.equalToSuperview()
         }
         
@@ -170,9 +192,21 @@ class DailyVC: UIViewController {
             make.height.equalTo(60)
         }
         
+        view.addSubview(descLabel)
+        descLabel.snp.makeConstraints { make in
+            make.top.equalTo(weatherIcon.snp.bottom).offset(5)
+            make.left.equalToSuperview().offset(20)
+            make.right.equalToSuperview().offset(-20)
+        }
+        view.addSubview(windSpeed)
+        windSpeed.snp.makeConstraints { make in
+            make.top.equalTo(descLabel.snp.bottom).offset(5)
+            make.centerX.equalToSuperview()
+        }
+        
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(weatherIcon.snp.bottom).offset(10)
+            make.top.equalTo(windSpeed.snp.bottom).offset(10)
             make.left.right.bottom.equalToSuperview()
             make.width.equalToSuperview()
             
