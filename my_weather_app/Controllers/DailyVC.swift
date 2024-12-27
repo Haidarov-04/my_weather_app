@@ -8,10 +8,88 @@
 import UIKit
 
 class DailyVC: UIViewController {
+    //MARK: -
     var daily: Day?
     var today = false
     var currentTime: Double?
 
+    //MARK: -UI Elements
+    lazy var dateLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 30)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = String(daily?.datetime ?? "")
+        return label
+    }()
+    
+    lazy var minTempLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = "\(String(daily?.tempmin ?? 0))°"
+        return label
+    }()
+    
+    lazy var tempLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = "\(String(daily?.temp ?? 0))°"
+        return label
+    }()
+    
+    lazy var maxTempLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = "\(String(daily?.tempmax ?? 0))°"
+        return label
+    }()
+    
+    lazy var weatherIcon: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(named: "\(daily?.icon ?? "")")
+        return imageView
+    }()
+    
+    lazy var sun:(String, String)-> UIView = {icon, time in
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: icon)
+        
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = String(time.prefix(5))
+        view.addSubview(imageView)
+        imageView.snp.makeConstraints{make in
+            make.top.equalToSuperview().offset(3)
+            make.width.height.equalTo(40)
+            make.centerX.equalToSuperview()
+        }
+        view.addSubview(label)
+        label.snp.makeConstraints{make in
+            make.top.equalTo(imageView.snp.bottom).offset(3)
+            make.centerX.equalToSuperview()
+        }
+        return view
+    }
+    
+    
     lazy var layout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -27,19 +105,77 @@ class DailyVC: UIViewController {
         collectionView.backgroundColor = .systemBlue
         return collectionView
     }()
+    
+    //MARK: -
+    
+    lazy var sunrise = sun("sunrise", "\(daily?.sunrise ?? "")")
+    lazy var sunset = sun("sunset", "\(daily?.sunset ?? "")")
 
+    //MARK: -Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBlue
         setupUI()
         delegates()
 
     }
     
+    //MARK: - methods
     private func setupUI() {
+        view.addSubview(dateLabel)
+        dateLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.layoutMarginsGuide)
+            make.centerX.equalToSuperview()
+        }
+        
+        view.addSubview(tempLabel)
+        tempLabel.snp.makeConstraints { make in
+            make.top.equalTo(dateLabel.snp.bottom).offset(20)
+            make.width.height.equalTo(50)
+            make.centerX.equalToSuperview()
+        }
+        
+        view.addSubview(minTempLabel)
+        minTempLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(tempLabel.snp.centerY)
+            make.centerX.equalToSuperview().multipliedBy(0.5)
+        }
+        
+        view.addSubview(maxTempLabel)
+        maxTempLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(tempLabel.snp.centerY)
+            make.centerX.equalToSuperview().multipliedBy(1.5)
+        }
+        
+        view.addSubview(weatherIcon)
+        weatherIcon.snp.makeConstraints { make in
+            make.top.equalTo(tempLabel.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(120)
+        }
+        
+        view.addSubview(sunrise)
+        sunrise.snp.makeConstraints { make in
+            make.centerY.equalTo(weatherIcon.snp.centerY)
+            make.centerX.equalToSuperview().multipliedBy(0.3)
+            make.width.equalTo(40)
+            make.height.equalTo(60)
+        }
+        
+        view.addSubview(sunset)
+        sunset.snp.makeConstraints { make in
+            make.centerY.equalTo(weatherIcon.snp.centerY)
+            make.centerX.equalToSuperview().multipliedBy(1.7)
+            make.width.equalTo(40)
+            make.height.equalTo(60)
+        }
+        
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.height.equalToSuperview()
+            make.top.equalTo(weatherIcon.snp.bottom).offset(10)
+            make.left.right.bottom.equalToSuperview()
+            make.width.equalToSuperview()
+            
         }
     }
     
@@ -52,6 +188,7 @@ class DailyVC: UIViewController {
 }
 
 
+//MARK: - DailyVC + UICollectionViewDelegate, UICollectionViewDataSource
 extension DailyVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if today {

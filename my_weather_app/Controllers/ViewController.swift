@@ -316,6 +316,7 @@ class ViewController: UIViewController {
                 self.weatherData = data
                 DispatchQueue.main.async {
                     self.updateUI()
+                    self.scrollView.refreshControl?.endRefreshing()
                 }
             case .failure(let error):
                 print("Error: \(error.localizedDescription)")
@@ -381,9 +382,6 @@ class ViewController: UIViewController {
     @objc
     func refresh(_ sender: Any) {
         fetchData()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.scrollView.refreshControl?.endRefreshing()
-        }
     }
     
     
