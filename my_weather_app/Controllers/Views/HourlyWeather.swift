@@ -66,7 +66,7 @@ class HourlyWeatherView: UIView {
         weatherImageView.snp.makeConstraints { make in
             make.top.equalTo(hourLabel.snp.bottom).offset(15)
             make.centerX.equalToSuperview()
-            make.width.height.equalTo(20)
+            make.width.height.equalTo(25)
         }
         
         tempLabel.snp.makeConstraints { make in
