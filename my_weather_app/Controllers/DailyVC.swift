@@ -11,7 +11,7 @@ class DailyVC: UIViewController {
     //MARK: -
     var daily: Day?
     var today = false
-    var currentTime: Double?
+    var currentTime: Int?
 
     //MARK: -UI Elements
     lazy var dateLabel: UILabel = {
@@ -20,7 +20,7 @@ class DailyVC: UIViewController {
         label.font = .systemFont(ofSize: 30)
         label.textColor = .white
         label.textAlignment = .center
-        label.text = String(daily?.datetime ?? "")
+        label.text = today ? "Today": String(daily?.datetime ?? "")
         return label
     }()
     
@@ -41,6 +41,16 @@ class DailyVC: UIViewController {
         label.textColor = .white
         label.textAlignment = .center
         label.text = "\(String(daily?.temp ?? 0))°"
+        return label
+    }()
+    
+    lazy var feelsLikeLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 12)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = "Feels Like: \(String(daily?.feelslike ?? 0))°"
         return label
     }()
     
@@ -139,11 +149,11 @@ class DailyVC: UIViewController {
     }
     
     //MARK: - methods
-    
     private func setupMainView() {
         view.backgroundColor = UIColor(named: "customBlue")
         navigationController?.navigationBar.tintColor = .white
     }
+    
     private func setupUI() {
         view.addSubview(dateLabel)
         dateLabel.snp.makeConstraints { make in
@@ -154,6 +164,12 @@ class DailyVC: UIViewController {
         view.addSubview(tempLabel)
         tempLabel.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
+        
+        view.addSubview(feelsLikeLabel)
+        feelsLikeLabel.snp.makeConstraints { make in
+            make.top.equalTo(tempLabel.snp.bottom).offset(2)
             make.centerX.equalToSuperview()
         }
         
@@ -171,7 +187,7 @@ class DailyVC: UIViewController {
         
         view.addSubview(weatherIcon)
         weatherIcon.snp.makeConstraints { make in
-            make.top.equalTo(tempLabel.snp.bottom).offset(10)
+            make.top.equalTo(feelsLikeLabel.snp.bottom).offset(5)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(120)
         }
@@ -217,8 +233,6 @@ class DailyVC: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
     }
-
-
 }
 
 
@@ -227,7 +241,7 @@ extension DailyVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if today {
             guard let currentHour = currentTime, let hours = daily?.hours else { return 0 }
-            return hours.filter { Double($0.datetime.prefix(2)) ?? 0 >= currentHour }.count
+            return hours.filter { Int($0.datetime.prefix(2)) ?? 0 >= currentHour }.count
         }
         return daily?.hours.count ?? 0
     }
@@ -239,14 +253,15 @@ extension DailyVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
         let filteredHours: [Hour]
         if today, let currentHour = currentTime, let hours = daily?.hours {
-            filteredHours = hours.filter { Double($0.datetime.prefix(2)) ?? 0 >= currentHour }
-            
+            filteredHours = hours.filter { Int($0.datetime.prefix(2)) ?? 0 >= currentHour }
         } else {
             filteredHours = daily?.hours ?? []
         }
 
         let hour = filteredHours[indexPath.row]
-        cell.timeLabel.text = (today && (Double(hour.datetime.prefix(2)) == currentTime)) ? "Now" : String(hour.datetime.prefix(5))
+        let now = (Int(hour.datetime.prefix(2)) == currentTime)
+        
+        cell.timeLabel.text = (today && now ) ? "Now" : String(hour.datetime.prefix(5))
         cell.imageView.image = UIImage(named: hour.icon)
         cell.descLabel.text = hour.conditions
         cell.windLabel.text = "Скорост ветра: \(hour.windspeed) m/s"

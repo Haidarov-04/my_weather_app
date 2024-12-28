@@ -324,6 +324,7 @@ class ViewController: UIViewController {
                     self.scrollView.refreshControl?.endRefreshing()
                 }
             case .failure(let error):
+                self.checkConnection()
                 print("Error: \(error.localizedDescription)")
             }
             
@@ -341,30 +342,24 @@ class ViewController: UIViewController {
         descriptionLabel.text = weatherData?.days[0].description
         windSpeedLabel.text = "Скорост ветра: \(weatherData?.currentConditions.windspeed ?? 0) м/с"
         addHourlyViews()
+        tableview.isHidden = false
         tableview.reloadData()
     }
     
     private func addHourlyViews() {
-        for (index, hour) in weatherData.days[0].hours.enumerated() {
-            if Double(hour.datetime.prefix(2))! == Double(weatherData.currentConditions.datetime.prefix(2))! {
-                let hourly = HourlyWeatherView(hour: "Now", icon: hour.icon, temp: hour.temp)
+        let currentHour = currentTime()
+        for (_, hour) in weatherData.days[0].hours.enumerated() {
+            let now = Int(hour.datetime.prefix(2))! == currentHour
+            if Int(hour.datetime.prefix(2))! >= currentHour {
+                let hourly = HourlyWeatherView(hour: now ? "Now": hour.datetime, icon: hour.icon, temp: hour.temp)
                 hourly.snp.makeConstraints { make in
                     make.width.equalTo(50)
                 }
                 hourlyStackView.addArrangedSubview(hourly)
             }
-            
-            if Double(hour.datetime.prefix(2))! > Double(weatherData.currentConditions.datetime.prefix(2))! {
-                let hourly = HourlyWeatherView(hour: hour.datetime, icon: hour.icon, temp: hour.temp)
-                hourly.snp.makeConstraints { make in
-                    make.width.equalTo(50)
-                }
-                hourlyStackView.addArrangedSubview(hourly)
-            }
-            
         }
         
-        for (index, hour) in weatherData.days[1].hours.enumerated() {
+        for (_, hour) in weatherData.days[1].hours.enumerated() {
             if hourlyStackView.subviews.count <= 24{
                 let hourly = HourlyWeatherView(hour: hour.datetime, icon: hour.icon, temp: hour.temp)
                 hourly.snp.makeConstraints { make in
@@ -384,10 +379,42 @@ class ViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: .valueChanged)
     }
     
+    private func currentTime()->Int{
+        let date = Date()
+        let calendar = Calendar.current
+        return  calendar.component(.hour, from: date)
+    }
+    
+    private func checkConnection(){
+        let ac = UIAlertController(title: "Пожалуйста, проверьте подключение", message: nil, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
+    
     @objc
     func refresh(_ sender: Any) {
+        temperatureLabel.text = "--°"
+        feelsLikeLabel.text = "Feels like: --°"
+        conditonLabel.text = "----"
+        weatherImageView.image = .none
+        weatherImageView.backgroundColor = .black.withAlphaComponent(0.3)
+        descriptionLabel.text = "----------"
+        windSpeedLabel.text = "Скорост ветра: --м/с"
+        hourlyStackView.arrangedSubviews.forEach { subview in
+            hourlyStackView.removeArrangedSubview(subview)
+            subview.removeFromSuperview()
+        }
+        weatherData = nil
+        tableview.isHidden = true
         fetchData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.scrollView.refreshControl?.endRefreshing()
+        }
     }
+    
+    
+    
+    
     
     
 }
@@ -421,7 +448,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let vc = DailyVC()
         vc.daily = weatherData?.days[indexPath.row]
         vc.today = indexPath.row == 0
-        vc.currentTime = Double((weatherData?.currentConditions.datetime.prefix(2))!)
+        vc.currentTime = currentTime()
         navigationController?.pushViewController(vc, animated: true)
     }
     

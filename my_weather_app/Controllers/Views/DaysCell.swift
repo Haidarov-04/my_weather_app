@@ -72,12 +72,6 @@ class DaysCell: UITableViewCell {
         setupViews()
     }
     private func setupViews() {
-//        contentView.addSubview(dayLabel)
-//        dayLabel.snp.makeConstraints { make in
-//            make.centerY.equalToSuperview()
-//            make.left.equalToSuperview().offset(10)
-//        }
-        
         contentView.addSubview(dateLabel)
         dateLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
