@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     let loadingView: UIView = {
        let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "customBlue")
+        view.backgroundColor = UIColor(named: "customBlue")!.withAlphaComponent(0.5)
         return view
     }()
     
@@ -29,7 +29,6 @@ class ViewController: UIViewController {
         activity.startAnimating()
         return activity
     }()
-    
     
     let refreshControl = UIRefreshControl()
     
@@ -359,15 +358,19 @@ class ViewController: UIViewController {
                 self.weatherData = data
                 DispatchQueue.main.async {
                     self.updateUI()
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5){
                     self.scrollView.refreshControl?.endRefreshing()
                     self.loadingView.removeFromSuperview()
                     self.loadingActivity.removeFromSuperview()
                 }
             case .failure(let error):
-                self.checkConnection()
                 print("Error: \(error.localizedDescription)")
-                self.loadingView.removeFromSuperview()
-                self.loadingActivity.removeFromSuperview()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3){
+                    self.checkConnection()
+                    self.loadingView.removeFromSuperview()
+                    self.loadingActivity.removeFromSuperview()
+                }
             }
             
         }
@@ -435,6 +438,17 @@ class ViewController: UIViewController {
     
     @objc
     func refresh(_ sender: Any) {
+        view.addSubview(loadingView)
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.height.equalToSuperview()
+        }
+        
+        loadingView.addSubview(loadingActivity)
+        loadingActivity.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(50)
+        }
 //        temperatureLabel.text = "--°"
 //        feelsLikeLabel.text = "Feels like: --°"
 //        conditonLabel.text = "----"
