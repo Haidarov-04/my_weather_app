@@ -15,6 +15,22 @@ class ViewController: UIViewController {
     var weatherData: WeatherDatas!
     
     //MARK: -UI Elements
+    let loadingView: UIView = {
+       let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor(named: "customBlue")
+        return view
+    }()
+    
+    let loadingActivity: UIActivityIndicatorView = {
+        let activity = UIActivityIndicatorView()
+        activity.color = .white
+        activity.translatesAutoresizingMaskIntoConstraints = false
+        activity.startAnimating()
+        return activity
+    }()
+    
+    
     let refreshControl = UIRefreshControl()
     
     lazy var scrollView: UIScrollView = {
@@ -199,6 +215,7 @@ class ViewController: UIViewController {
     }
     
     private func setupUI() {
+        
         view.addSubview(scrollView)
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -317,6 +334,19 @@ class ViewController: UIViewController {
             make.left.bottom.equalToSuperview()
             make.height.equalTo(750)
         }
+        
+        view.addSubview(loadingView)
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.height.equalToSuperview()
+        }
+        
+        loadingView.addSubview(loadingActivity)
+        loadingActivity.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(50)
+        }
+
     
     }
 
@@ -330,10 +360,14 @@ class ViewController: UIViewController {
                 DispatchQueue.main.async {
                     self.updateUI()
                     self.scrollView.refreshControl?.endRefreshing()
+                    self.loadingView.removeFromSuperview()
+                    self.loadingActivity.removeFromSuperview()
                 }
             case .failure(let error):
                 self.checkConnection()
                 print("Error: \(error.localizedDescription)")
+                self.loadingView.removeFromSuperview()
+                self.loadingActivity.removeFromSuperview()
             }
             
         }
@@ -401,19 +435,6 @@ class ViewController: UIViewController {
     
     @objc
     func refresh(_ sender: Any) {
-        temperatureLabel.text = "--°"
-        feelsLikeLabel.text = "Feels like: --°"
-        conditonLabel.text = "----"
-        weatherImageView.image = .none
-        weatherImageView.backgroundColor = .black.withAlphaComponent(0.3)
-        descriptionLabel.text = "----------"
-        windSpeedLabel.text = "Скорост ветра: --м/с"
-        hourlyStackView.arrangedSubviews.forEach { subview in
-            hourlyStackView.removeArrangedSubview(subview)
-            subview.removeFromSuperview()
-        }
-        weatherData = nil
-        tableview.isHidden = true
         fetchData()
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.scrollView.refreshControl?.endRefreshing()
