@@ -435,6 +435,19 @@ class ViewController: UIViewController {
     
     @objc
     func refresh(_ sender: Any) {
+//        temperatureLabel.text = "--°"
+//        feelsLikeLabel.text = "Feels like: --°"
+//        conditonLabel.text = "----"
+//        weatherImageView.image = .none
+//        weatherImageView.backgroundColor = .black.withAlphaComponent(0.3)
+//        descriptionLabel.text = "----------"
+//        windSpeedLabel.text = "Скорост ветра: --м/с"
+        hourlyStackView.arrangedSubviews.forEach { subview in
+            hourlyStackView.removeArrangedSubview(subview)
+            subview.removeFromSuperview()
+        }
+//        weatherData = nil
+//        tableview.isHidden = true
         fetchData()
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.scrollView.refreshControl?.endRefreshing()
