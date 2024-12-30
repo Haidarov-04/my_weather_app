@@ -8,20 +8,12 @@
 import UIKit
 
 class DaysCell: UITableViewCell {
-    let dayLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 12)
-        label.textColor = .systemGray
-        label.textAlignment = .center
-        return label
-    }()
     
     let dateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12)
-        label.textColor = .systemGray
+        label.textColor = .white
         label.textAlignment = .center
         return label
     }()
@@ -46,7 +38,7 @@ class DaysCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12)
-        label.textColor = .systemGray
+        label.textColor = .lightGray
         label.textAlignment = .left
         return label
     }()
@@ -55,7 +47,7 @@ class DaysCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12)
-        label.textColor = .systemGray
+        label.textColor = .white
         label.textAlignment = .center
         return label
     }()
@@ -81,7 +73,9 @@ class DaysCell: UITableViewCell {
         contentView.addSubview(imgView)
         imgView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.left.equalTo(dateLabel.snp.right).offset(10)
+//            make.left.equalTo(dateLabel.snp.right).offset(10)
+            make.left.equalToSuperview().offset(90)
+            
             make.width.height.equalTo(20)
         }
         contentView.addSubview(minTempLabel)
@@ -89,21 +83,21 @@ class DaysCell: UITableViewCell {
             make.left.equalTo(imgView.snp.right).offset(10)
             make.centerY.equalToSuperview()
         }
-       
         
         contentView.addSubview(maxTempLabel)
         maxTempLabel.snp.makeConstraints { make in
-            make.right.equalToSuperview().offset(-10)
+            make.right.equalToSuperview()
             make.centerY.equalToSuperview()
         }
         
         contentView.addSubview(desc)
         desc.snp.makeConstraints { make in
-//            make.right.equalTo(maxTempLabel.snp.left).offset(-10)
             make.left.equalTo(minTempLabel.snp.right).offset(10)
             make.centerY.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.43)
+            make.right.equalTo(maxTempLabel.snp.left).offset(-10)
         }
+        
+
     }
     
     required init?(coder: NSCoder) {

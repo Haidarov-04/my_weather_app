@@ -84,7 +84,7 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .white
-        label.font = UIFont(name: "HoeflerText-Regular", size: 20)
+        label.font = UIFont(name: "HoeflerText-Regular", size: 17)
         label.textAlignment = .center
         label.text = "-----"
         return label
@@ -111,6 +111,7 @@ class ViewController: UIViewController {
         label.textColor = .white
         label.font = UIFont(name: "HoeflerText-Regular", size: 18)
         label.textAlignment = .left
+        label.numberOfLines = 0
         label.text = "----------"
         return label
     }()
@@ -221,21 +222,25 @@ class ViewController: UIViewController {
             make.top.equalTo(adressLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview().multipliedBy(0.5)
         }
+        
         contentView.addSubview(feelsLikeLabel)
         feelsLikeLabel.snp.makeConstraints { make in
             make.top.equalTo(temperatureLabel.snp.bottom).offset(5)
             make.centerX.equalTo(temperatureLabel.snp.centerX)
         }
+        
         contentView.addSubview(weatherImageView)
         weatherImageView.snp.makeConstraints { make in
             make.top.equalTo(adressLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview().multipliedBy(1.5)
             make.width.height.equalTo(90)
         }
+        
         contentView.addSubview(conditonLabel)
         conditonLabel.snp.makeConstraints { make in
             make.centerY.equalTo(feelsLikeLabel.snp.centerY)
             make.centerX.equalTo(weatherImageView.snp.centerX)
+            make.right.equalToSuperview().offset(-5)
         }
         
         contentView.addSubview(hourlyView)
@@ -243,13 +248,15 @@ class ViewController: UIViewController {
             make.top.equalTo(feelsLikeLabel.snp.bottom).offset(15)
             make.width.equalToSuperview().multipliedBy(0.9)
             make.centerX.equalToSuperview()
-            make.height.equalTo(180)
+//            make.height.equalTo(180)
         }
         
         hourlyView.addSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
             make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
+            
         }
         
         hourlyView.addSubview(windSpeedLabel)
@@ -272,6 +279,7 @@ class ViewController: UIViewController {
             make.bottom.equalTo(hourlyView.snp.bottom)
             make.right.equalTo(hourlyView).offset(-10)
             make.left.equalTo(hourlyView.snp.left).offset(10)
+            make.height.equalTo(120)
         }
         
         hourlyScrollView.addSubview(hourlyStackView)
@@ -431,11 +439,10 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)  as? DaysCell else { return UITableViewCell()}
         if let day = weatherData?.days[indexPath.row]{
-            cell.dayLabel.text = "Today"
-            cell.dateLabel.text = day.datetime
+            cell.dateLabel.text = indexPath.row == 0 ? "Today" : day.datetime
             cell.imgView.image = UIImage(named: day.icon)
             cell.minTempLabel.text = "\(day.tempmin)°"
-            cell.desc.text = day.conditions
+            cell.desc.text = "\(day.conditions)                                              "
             cell.maxTempLabel.text = "\(day.tempmax)°"
             
         }

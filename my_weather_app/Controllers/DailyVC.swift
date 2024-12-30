@@ -17,7 +17,7 @@ class DailyVC: UIViewController {
     lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 30)
+        label.font = UIFont(name: "Georgia", size: 25)
         label.textColor = .white
         label.textAlignment = .center
         label.text = today ? "Today": String(daily?.datetime ?? "")
@@ -37,7 +37,7 @@ class DailyVC: UIViewController {
     lazy var tempLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.font = .systemFont(ofSize: 40, weight: .bold)
         label.textColor = .white
         label.textAlignment = .center
         label.text = "\(String(daily?.temp ?? 0))°"
@@ -152,18 +152,13 @@ class DailyVC: UIViewController {
     private func setupMainView() {
         view.backgroundColor = UIColor(named: "customBlue")
         navigationController?.navigationBar.tintColor = .white
+        navigationItem.titleView = dateLabel
     }
     
     private func setupUI() {
-        view.addSubview(dateLabel)
-        dateLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.layoutMarginsGuide)
-            make.centerX.equalToSuperview()
-        }
-        
         view.addSubview(tempLabel)
         tempLabel.snp.makeConstraints { make in
-            make.top.equalTo(dateLabel.snp.bottom).offset(20)
+            make.top.equalTo(view.layoutMarginsGuide).offset(5)
             make.centerX.equalToSuperview()
         }
         
@@ -189,7 +184,7 @@ class DailyVC: UIViewController {
         weatherIcon.snp.makeConstraints { make in
             make.top.equalTo(feelsLikeLabel.snp.bottom).offset(5)
             make.centerX.equalToSuperview()
-            make.width.height.equalTo(120)
+            make.width.height.equalTo(100)
         }
         
         view.addSubview(sunrise)
@@ -222,7 +217,7 @@ class DailyVC: UIViewController {
         
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(windSpeed.snp.bottom).offset(10)
+            make.top.equalTo(windSpeed.snp.bottom).offset(5)
             make.left.right.bottom.equalToSuperview()
             make.width.equalToSuperview()
             
