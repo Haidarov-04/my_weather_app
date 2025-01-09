@@ -9,11 +9,14 @@ import UIKit
 import Alamofire
 import SnapKit
 
+
+
 class ViewController: UIViewController {
     //MARK: -
     let adress = "Khujand"
     var weatherData: WeatherDatas!
     
+    var viewModel = ViewModel()
     //MARK: -UI Elements
     let loadingView: UIView = {
        let view = UIView()
@@ -197,7 +200,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setupMainView()
         setupUI()
-        fetchData()
+        viewModel.fetchData(adress: adress)
         delegates()
         targets()
     }
@@ -348,35 +351,6 @@ class ViewController: UIViewController {
 
     
     }
-
-    private func fetchData() {
-        let urlString = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/\(adress)?unitGroup=metric&include=days%2Chours%2Ccurrent&lang=ru&key=8UR5K2HXEMSRTAGZZLSETRAVQ&contentType=json"
-        
-        AF.request(urlString, method: .get).responseDecodable(of: WeatherDatas.self){ response in
-            switch response.result {
-            case .success(let data):
-                self.weatherData = data
-                DispatchQueue.main.async {
-                    self.updateUI()
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5){
-                    self.scrollView.refreshControl?.endRefreshing()
-                    self.loadingView.removeFromSuperview()
-                    self.loadingActivity.removeFromSuperview()
-                }
-            case .failure(let error):
-                print("Error: \(error.localizedDescription)")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3){
-                    self.checkConnection()
-                    self.loadingView.removeFromSuperview()
-                    self.loadingActivity.removeFromSuperview()
-                }
-            }
-            
-        }
-        
-        
-    }
     
     private func updateUI(){
         temperatureLabel.text = "\(weatherData?.currentConditions.temp ?? 0)°"
@@ -418,6 +392,7 @@ class ViewController: UIViewController {
     private func delegates() {
         tableview.delegate = self
         tableview.dataSource = self
+        viewModel.delegate = self
     }
     
     private func targets() {
@@ -462,17 +437,13 @@ class ViewController: UIViewController {
         }
 //        weatherData = nil
 //        tableview.isHidden = true
-        fetchData()
+//        fetchData()
+        viewModel.fetchData(adress: adress)
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.scrollView.refreshControl?.endRefreshing()
         }
     }
-    
-    
-    
-    
-    
-    
+  
 }
 
 
@@ -510,4 +481,26 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
 }
 
+extension ViewController: ViewModelDelegate {
+    
+    func reloadData(data: WeatherDatas) {
+        self.weatherData = data
+        DispatchQueue.main.async {
+            self.updateUI()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5){
+            self.scrollView.refreshControl?.endRefreshing()
+            self.loadingView.removeFromSuperview()
+            self.loadingActivity.removeFromSuperview()
+        }
+    }
+    
+    func failure() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3){
+            self.checkConnection()
+            self.loadingView.removeFromSuperview()
+            self.loadingActivity.removeFromSuperview()
+        }
 
+    }
+}
