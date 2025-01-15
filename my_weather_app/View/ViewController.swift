@@ -8,7 +8,7 @@
 import UIKit
 import Alamofire
 import SnapKit
-
+import WidgetKit
 
 
 class ViewController: UIViewController {
@@ -267,7 +267,6 @@ class ViewController: UIViewController {
             make.top.equalTo(feelsLikeLabel.snp.bottom).offset(15)
             make.width.equalToSuperview().multipliedBy(0.9)
             make.centerX.equalToSuperview()
-//            make.height.equalTo(180)
         }
         
         hourlyView.addSubview(descriptionLabel)
@@ -411,6 +410,10 @@ class ViewController: UIViewController {
         present(ac, animated: true)
     }
     
+    private func n() -> String? {
+        return nil
+    }
+    
     @objc
     func refresh(_ sender: Any) {
         view.addSubview(loadingView)
@@ -493,6 +496,13 @@ extension ViewController: ViewModelDelegate {
             self.loadingView.removeFromSuperview()
             self.loadingActivity.removeFromSuperview()
         }
+        if let userDefaults = UserDefaults(suiteName: "group.haidarovs.weather.app"){
+            print("useeeeeer")
+            userDefaults.set(data.currentConditions.temp, forKey: "temp")
+            userDefaults.set(adress, forKey: "city")
+            userDefaults.set(data.currentConditions.icon, forKey: "icon")
+            
+        }
     }
     
     func failure() {
@@ -501,6 +511,15 @@ extension ViewController: ViewModelDelegate {
             self.loadingView.removeFromSuperview()
             self.loadingActivity.removeFromSuperview()
         }
+        if let userDefaults = UserDefaults(suiteName: "group.haidarovs.weather.app") {
+            print("aa")
+            userDefaults.set("15.0", forKey: "temp")
+            userDefaults.set("Khujand", forKey: "city")
+            userDefaults.set("clear-day", forKey: "icon")
+            userDefaults.synchronize()
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+        
 
     }
 }

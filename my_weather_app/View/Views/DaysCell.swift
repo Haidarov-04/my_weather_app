@@ -73,7 +73,6 @@ class DaysCell: UITableViewCell {
         contentView.addSubview(imgView)
         imgView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-//            make.left.equalTo(dateLabel.snp.right).offset(10)
             make.left.equalToSuperview().offset(90)
             
             make.width.height.equalTo(20)
