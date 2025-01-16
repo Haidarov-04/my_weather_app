@@ -14,9 +14,7 @@ protocol ViewModelDelegate: AnyObject{
 }
 
 class ViewModel{
-    
     weak var delegate: ViewModelDelegate?
-    
      func fetchData(adress: String) {
         let urlString = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/\(adress)?unitGroup=metric&include=days%2Chours%2Ccurrent&lang=ru&key=8UR5K2HXEMSRTAGZZLSETRAVQ&contentType=json"
         
@@ -34,3 +32,5 @@ class ViewModel{
         }
     }
 }
+
+

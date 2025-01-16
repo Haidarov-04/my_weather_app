@@ -98,7 +98,6 @@ struct CurrentConditions: Codable {
 
 struct weather_widjetEntryView : View {
     var entry: Provider.Entry
-    
     var body: some View {
         VStack {
             Text(entry.city)
@@ -121,6 +120,7 @@ struct weather_widjetEntryView : View {
 
 struct weather_widjet: Widget {
     let kind: String = "weather_widjet"
+    
     
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in

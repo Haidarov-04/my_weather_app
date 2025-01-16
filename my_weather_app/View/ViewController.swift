@@ -501,6 +501,8 @@ extension ViewController: ViewModelDelegate {
             userDefaults.set(data.currentConditions.temp, forKey: "temp")
             userDefaults.set(adress, forKey: "city")
             userDefaults.set(data.currentConditions.icon, forKey: "icon")
+            userDefaults.synchronize()
+            WidgetCenter.shared.reloadAllTimelines()
             
         }
     }
@@ -511,15 +513,5 @@ extension ViewController: ViewModelDelegate {
             self.loadingView.removeFromSuperview()
             self.loadingActivity.removeFromSuperview()
         }
-        if let userDefaults = UserDefaults(suiteName: "group.haidarovs.weather.app") {
-            print("aa")
-            userDefaults.set("15.0", forKey: "temp")
-            userDefaults.set("Khujand", forKey: "city")
-            userDefaults.set("clear-day", forKey: "icon")
-            userDefaults.synchronize()
-            WidgetCenter.shared.reloadAllTimelines()
-        }
-        
-
     }
 }
